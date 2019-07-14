@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+      <name>RACE GIS (DATE)</name>
+      <description>x years, y project types, z client types</description>
+      <Placemark>
+        <name>Simple placemark</name>
+        <description>Attached to the ground. Intelligently places itself at the
+          height of the underlying terrain.</description>
+        <Point>
+          <coordinates>41.2166794166201,-73.1216929999683,0</coordinates>
+        </Point>
+      </Placemark>
+  </Document>
+</kml>
