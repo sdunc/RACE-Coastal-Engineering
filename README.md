@@ -2,7 +2,7 @@
 Summer 2019 Internship Project
 
 I am a physics/engineering student, not a programmer. That's my excuse for why the code is like this.
-Regardless, messy code gets the work done.
+Regardless, messy code gets the job done.
 
 This program is designed specifically to work within the company enviorment, it won't work if you run the code as is.
 
