@@ -45,6 +45,8 @@ def map_gen():
     print("RACE_GIS.kml")
     print(get_years())
     print(get_client_types())
+    if loc_spec_var.get():
+        print(get_location())
     #os.startfile("RACE_GIS"+)
 
 
@@ -77,6 +79,20 @@ def get_client_types():
         if not contractor_var.get():
             client_types.remove('Contractor')
         return client_types
+
+def get_location():
+    '''
+    This function returns all the location specific information
+    '''
+    spec_by = location_var_1.get()
+    starting_point = loc_entry_var.get()
+    radius = loc_radius_var.get()
+    return spec_by,starting_point,radius
+    
+def check_location():
+    '''
+    '''
+    
     
 def kml_ender(kml):
     '''
@@ -178,11 +194,18 @@ def location_spec():
     if loc_spec_var.get():
         location_drop_down.config(state=tk.NORMAL)
         loc_entry.config(state=tk.NORMAL)
-        loc_radius.config(state=tk.NORMAL)    
+        loc_radius.config(state=tk.NORMAL)
+        loc_radius_label.config(state=tk.NORMAL)
+        starting_point_label.config(state=tk.NORMAL)
+
+
     else:
         location_drop_down.config(state=tk.DISABLED)    
         loc_entry.config(state=tk.DISABLED)
         loc_radius.config(state=tk.DISABLED)    
+        loc_radius_label.config(state=tk.DISABLED)
+        starting_point_label.config(state=tk.DISABLED)
+
 
       
 def checkyear(year):
@@ -372,6 +395,7 @@ location_drop_down.config(state=tk.DISABLED)
 
 starting_point_label = tk.Label(location,text="Starting Point")
 starting_point_label.grid(column=1,row=2,sticky=tk.W+tk.E)
+starting_point_label.config(state=tk.DISABLED)
 
 loc_entry_var = tk.StringVar()
 loc_entry = tk.Entry(location,textvariable=loc_entry_var)
@@ -383,6 +407,7 @@ loc_entry.grid(column=2,row=2,sticky=tk.W+tk.E)
 
 loc_radius_label = tk.Label(location,text="Radius (mi)")
 loc_radius_label.grid(column=1,row=3,sticky=tk.W+tk.E)
+loc_radius_label.config(state=tk.DISABLED)
 
 loc_radius_var = tk.StringVar()
 loc_radius = tk.Entry(location,textvariable=loc_radius_var)
