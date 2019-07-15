@@ -1,14 +1,28 @@
 #Stephen Duncanon
-#RACE GIS gui
-#Final version
+#RACE GIS 
+#7/12/19 -
 
+#Imports
+#import os
 import tkinter as tk
 from tkinter import ttk
 import datetime
+import time
+#import openpyxl
+#import heatmap
+#import geopy
+#from geopy.distance import geodesic #distance = geodesic(tuple1lat,long,tuple2lat,long).miles
+
+#Constants
+VERSION = .7                                    
+PROJECT_SPREADSHEET = 'X:/RACEGIS/projects.xlsx'
+CLIENT_SPREADSHEET = 'X:/RACEGIS/clients.xlsx'
+DATABASE_SPREADSHEET = 'X:/RACEGIS/database.xlsx'
+
+#Variables
 now = datetime.datetime.now()
 
-VERSION = .7
-
+#Functions
 def startup_check():
     '''
     The initial check for project and database spreadsheets
@@ -28,7 +42,47 @@ def map_gen():
     '''
     When map button is pressed
     '''
-    print("Normally I'd generate a map here")
+    print("RACE_GIS.kml")
+    print(get_years())
+    print(get_client_types())
+    #os.startfile("RACE_GIS"+)
+
+
+def get_years():
+    years = []
+    for x in range(int(year_var_1.get()),int(year_var_2.get())+1):
+        years.append(x)
+    return years
+
+def get_client_types():
+    client_types = ['Residential',
+                    'Government',
+                    'Marina / Yacht Club',
+                    'Utility / Industrial',
+                    'Consultant',
+                    'Contractor']
+    if all_client_var.get():
+        return client_types
+    else:
+        if not residential_var.get():
+            client_types.remove('Residential')
+        if not government_var.get():
+            client_types.remove('Government')
+        if not myc_var.get():
+            client_types.remove('Marina / Yacht Club')
+        if not util_var.get():
+            client_types.remove('Utility / Industrial')
+        if not consultant_var.get():
+            client_types.remove('Consultant')
+        if not contractor_var.get():
+            client_types.remove('Contractor')
+        return client_types
+    
+def kml_ender(kml):
+    '''
+    this function takes a kml file as input and closes all open tags
+    '''
+    
 
 def excel_gen():
     '''
@@ -37,27 +91,94 @@ def excel_gen():
     print("Normally I'd generate a spreadsheet here")
 
 def all_client():
-    print("all clients!")
-    
+    if all_client_var.get():
+        residential_var.set(1)
+        government_var.set(1)
+        myc_var.set(1) 
+        util_var.set(1) 
+        consultant_var.set(1)
+        contractor_var.set(1)
+        print("Selecting all clients")
+    else:
+        residential_var.set(0)
+        government_var.set(0)
+        myc_var.set(0) 
+        util_var.set(0) 
+        consultant_var.set(0)
+        contractor_var.set(0)
+        print("deselecting all clients")
+
 def client():
-    if client:
-        all_proj_var.set(0)
+    if residential_var.get() and \
+         government_var.get() and \
+         myc_var.get() and \
+         util_var.get() and \
+         consultant_var.get() and \
+         contractor_var.get():
+            all_client_var.set(1)
+    else:
+        all_client_var.set(0)
 
 
 def all_proj():
-    print("all projects!")
-    
+    if all_proj_var.get():
+        dredge_var.set(1)
+        floodwave_var.set(1)
+        hydro_var.set(1) 
+        pierdock_var.set(1) 
+        floodcontrol_var.set(1)
+        upland_var.set(1)
+        facilities_var.set(1)
+        beach_var.set(1)
+        construction_var.set(1)
+        other_var.set(1)
+        print("Selecting all projects")
 
+    else:
+        dredge_var.set(0)
+        floodwave_var.set(0)
+        hydro_var.set(0) 
+        pierdock_var.set(0) 
+        floodcontrol_var.set(0)
+        upland_var.set(0)
+        facilities_var.set(0)
+        beach_var.set(0)
+        construction_var.set(0)
+        other_var.set(0)
+        print("deselecting all projects")
+
+    
 def proj():
-    if proj:
+    '''
+    Dummy function, the states will be checked later, all this does is set all on or off
+    It checks if all the projects are checked, puts all on
+    if all are not checked, leaves (or sets) it unchecked.
+    '''
+    if dredge_var.get() and \
+         floodwave_var.get() and \
+         hydro_var.get() and \
+         pierdock_var.get() and \
+         floodcontrol_var.get() and \
+         upland_var.get() and \
+         facilities_var.get() and \
+         beach_var.get() and \
+         construction_var.get() and \
+         other_var.get():
+            all_proj_var.set(1)
+    else:
         all_proj_var.set(0)
 
 def location_spec():
+    '''
+    This function checks the status of the 'specify location' check box
+    is the box is checked (.get() returns true) then the state of all the location boxes is set to normal
+    meaning that they are no longer greyed out.
+    If the box is unchecked, they will all revert to being greyed out.
+    '''
     if loc_spec_var.get():
         location_drop_down.config(state=tk.NORMAL)
         loc_entry.config(state=tk.NORMAL)
         loc_radius.config(state=tk.NORMAL)    
-
     else:
         location_drop_down.config(state=tk.DISABLED)    
         loc_entry.config(state=tk.DISABLED)
@@ -66,6 +187,14 @@ def location_spec():
       
 def checkyear(year):
     loc_entry_var.set(str(year_var_2.get())+"001")
+    if year_var_2.get() == "1996":
+        year_var_1.set(year_var_2.get())
+    elif year_var_2.get() < year_var_1.get():
+        year2=year_var_2.get()
+        year2=int(year2)
+        year_var_1.set(year2-1)
+
+
     #Check to see if year_var_1 > year_var 2, change year_var 1 to be a year less, unless the year is 1996
     
 
@@ -76,20 +205,18 @@ def check_loc_dd_type(string):
         loc_entry_var.set("611 Access Road Startford CT")
 
 
-
-
-    
-root = tk.Tk()                 
+#Create the window    
+root = tk.Tk()
+#Set the titlebar
 root.title("RACE GIS "+str(VERSION))
 
-
-##YEARS##
+#YEARS
 year_choices = []
 year_var_1 = tk.StringVar()
 year_var_1.set(str(now.year))
 year_var_2 = tk.StringVar()
 year_var_2.set(str(now.year))
-for x in range(1995,now.year+1):
+for x in range(1996,now.year+1):
     year_choices.append(x)
     
 years = ttk.Labelframe(root,text="Years")
@@ -99,7 +226,7 @@ from_label = tk.Label(years, text="From")
 
 years.grid(row=0, column=1,columnspan=2,sticky=tk.W+tk.E,ipadx=2,ipady=2,padx=2,pady=2)
 from_label.grid(row=0,column=1)
-year_menu_1 = tk.OptionMenu(years,year_var_1, *year_choices)
+year_menu_1 = tk.OptionMenu(years,year_var_1, *year_choices,command=checkyear)
 year_menu_1.grid(row=0,column=2)
 to_label.grid(row=0,column=3)
 
@@ -107,7 +234,7 @@ year_menu_2 = tk.OptionMenu(years,year_var_2, *year_choices,command=checkyear)
 year_menu_2.grid(row=0,column=4)
 
 
-###PROJECTS###
+#PROJECTS
 projects = ttk.Labelframe(root,text="Project Types")
 projects.grid(row=1, column=1,sticky=tk.N,ipadx=2,ipady=2,padx=2,pady=2)
 
@@ -189,30 +316,34 @@ contractor_checkbox = tk.Checkbutton(clients, text="Contractor",variable=contrac
 contractor_checkbox.grid(row=6, column=1,sticky=tk.W)
 #############
 
-###EXTRAS###
+#EXTRAS
 extras = ttk.Labelframe(root,text="Extras")
 extras.grid(row=2,column=2,sticky=tk.W+tk.E,ipadx=2,ipady=2,padx=2,pady=2)
 
 permit_var = tk.IntVar(value=0)
 permit_checkbox = tk.Checkbutton(extras, text="Permit",variable=permit_var)
 permit_checkbox.grid(row=0, column=1,sticky=tk.W)
+permit_checkbox.config(state=tk.DISABLED)   #remove once added 
 
 boring_var = tk.IntVar(value=0)
 boring_checkbox = tk.Checkbutton(extras, text="Boring",variable=boring_var)
 boring_checkbox.grid(row=1, column=1,sticky=tk.W)
-#############
+boring_checkbox.config(state=tk.DISABLED)  #remove once added  
 
 ###DEEP ZONES###
-deep = ttk.Labelframe(root,text="DEEP Zones")
+deep = ttk.Labelframe(root,text="CT DEEP Zones")
 deep.grid(row=2,sticky=tk.W+tk.E, column=1,ipadx=2,ipady=2,padx=2,pady=2)
 
 aquifer_var = tk.IntVar(value=0)
 aquifer_checkbox = tk.Checkbutton(deep, text="Aquifer Protection",variable=aquifer_var)
 aquifer_checkbox.grid(row=0, column=1,sticky=tk.W)
+aquifer_checkbox.config(state=tk.DISABLED)  #remove once added  
 
 diversity_var = tk.IntVar(value=0)
 diversity_checkbox = tk.Checkbutton(deep, text="Diversity Database",variable=diversity_var)
 diversity_checkbox.grid(row=1, column=1,sticky=tk.W)
+diversity_checkbox.config(state=tk.DISABLED)  #remove once added  
+
 #############
 
 
@@ -260,12 +391,11 @@ loc_radius_var.set("10")
 loc_radius.grid(column=2,row=3)
 
 #MAP
-map_button = tk.Button(root,text='Google Earth',command='map_gen')
+map_button = tk.Button(root,text='Google Earth',command=map_gen)
 map_button.grid(row=5,column=1,sticky=tk.W+tk.E,ipadx=2,ipady=2,padx=2,pady=2)
 
-
 #SPREADSHEET
-excel_button = tk.Button(root,text='Excel',command='excel_gen')
+excel_button = tk.Button(root,text='Excel',command=excel_gen)
 excel_button.grid(row=5,column=2,sticky=tk.W+tk.E,ipadx=2,ipady=2,padx=2,pady=2)
 
 root.mainloop()
