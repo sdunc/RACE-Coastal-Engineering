@@ -1,0 +1,33 @@
+RACE-GIS
+A python program for mapping and visualizing coastal engineering project data.
+
+Design Principals--
+Easy to use - GUI, auto launch (to avoid importing woes), self contained executable (no python/installer)
+Easy to maintain - Self updating database, informative error messages (examples)
+Simple, focused - Reining my over-ambitionn in (animations, DEEP .shp-> KML polygons) to actually doing database
+Built to last - Built as a glue to connect AJERA -> Google/Microsoft. Fields future-proofed
+Easy to edit - Constants, commented code, Manual. All make it easy to change if something needs to be done.
+
+Flowchart--
+
+Graph of program over time--
+SLOC, Filesize, Runtime
+
+Version/Release History--
+
+Libraries Used--
+
+Variables--
+
+functions--
+
+KML--
+
+Schematic of GUI-- 
+done in CAD 
+
+THOUGHTS INDEV:
+Client types from txt file(speed it up?) / Project types
+could use a nested list to sort through files (much faster?)
+Database as a text file? (speed it up, only write to excel when needed?)
+clean up functions/make diagram!
