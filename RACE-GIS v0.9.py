@@ -17,7 +17,8 @@ from geopy.distance import geodesic         #In presentation, mention the model 
 #For now, I am operating under the assumption that the files will be called 'projects.txt', 'clients.txt','database.txt'
 #The idea is that 'projects.txt' + 'clients.txt' -> 'database.txt'
 #The database will be checked each time the program is opened, and cleaned, meaning any malformed entries will be purged
-#This may result in an incomplete dataset, but it will be an accurate one. 
+#This may result in an incomplete dataset, but it will be an accurate one.
+#Actually they will be given lat/long of 0,0
 #A log file will be created to provide a list of all the IDs that did not make it into the final database. 
 
 #Constants
@@ -58,10 +59,12 @@ PROJECT_TYPES = ['Dredging',                            #0
 
 
 def startup_database_check():
+    '''
+    This function is called every time that the project is opened.
+    It handles the fixing/updating of the database
+    '''
     if is_database_present():
-        if is_database_updated():
-            clean_database()
-        else:
+        if not is_database_updated():
             update_database()
     else:
         if are_sources_present():
@@ -70,6 +73,9 @@ def startup_database_check():
             popup("Error! Sources are missing")
 
 def is_database_present():
+    '''
+    This function determines if the database exists or not
+    '''
     if os.path.exists(DATABASE_FILE):
         return True
     else:
@@ -77,6 +83,14 @@ def is_database_present():
 
 
 def is_database_updated():
+    '''
+    This function checks if the database is updated by counting the lines in the database
+    and the lines in the project (source) file
+    by +1 for every line in database and -1 for every line in projects we have 3 cases
+    counter = 0, projects=database -> database is updated
+    counter > 0 database > projects -> error, database is ahead of source files
+    counter < 0 projects are ahead of database, database must update
+    '''
     database = open(DATABASE_FILE,'r')
     project_file = open(PROJECTS_FILE,'r')
     #to test if the database is updated, iterate over the number of lines and count them, then compare
@@ -114,7 +128,7 @@ def update_database():
     add_new_projects()
     add_client_types()
     geocode_database()
-    clean_database()
+    fix_database()
 
 def add_new_projects():
     '''
@@ -127,7 +141,6 @@ def add_new_projects():
     database = open(DATABASE_FILE,'w')
     projects_file = open(PROJECTS_FILE,'r')
     
-    current_database_lines = []
     currnet_project_lines = []
     current_database_ids = []
     
@@ -136,7 +149,7 @@ def add_new_projects():
     for line in database:
         if line_counter != 1:
             split_line = line.split(',')
-            current_database_lines.append(split_line[0])
+            current_database_ids.append(split_line[0])
             #using the split method here splits the long string into a list of words, which will get nested
             #I will need to see the behavior of the output text file to ensure that this works as desired 
             #it could be the case that AJERA will merely skip something if it has no value, which would cause this to become 
@@ -157,14 +170,51 @@ def add_new_projects():
     #since the line counter is no longer needed, I'm deleting it and freeing up the memory
     del line_counter
     
+    for project in current_project_lines:
+        if not project[0] in current_database_ids:
+            database.write(project.join(',')
+        
+            
+def add_client_types():
+    '''
+    create a dictionary with key value pairs
+    then iterate through database, breaking each line into a list
+    search each list for the key, if found, add the value into the nested list
+    write each list back to the file delimited
+    '''
+    clients = open(CLIENTS_FILE)
+    d = {}
+    line_counter = 1
+    for line in clients:
+        if line_counter != 1:
+            split_line = line.split(',')
+            d[split_line[0]]==split_line[1]
+        line_counter+=1
+    del line_counter
+    
 
     
 
-def add_client_types():
-
 def geocode_database():
+    '''
+    This function will iterate through the list of jobs (nested list)
+    and find ones with a len() too short to include lat/long
+    it will grab the location field and use nominatim to geocode
+    using try/except (TypeError) it will either put the address or (0,0)
+    '''
 
-def clean_database():
+def fix_database():
+    '''
+    This function will run after the database has been updated OR
+    when the user chooses this option from the menu,
+    that would be if the export was updated but no new fields had been added
+    it will search through the database and look for any projects with
+    0 for lat and 0 for long, (placeholders) then it will attempt to geocode the address
+    field and overwrite with true values
+    '''
+
+
+
 
 def popup(message):
     popup = tk.Tk()
@@ -179,14 +229,14 @@ def excel_button():
 def google_earth_button():
 
 def passes_filter():
+    
 
 def add_to_excel():
 
 def add_to_kml():
 
 
-
-
+#When I draw the New GUI, projects should be rowspan=2, clients and extras should each be in a row, this is a good way to remove whitespace, and compact the GUI
 
 
 
