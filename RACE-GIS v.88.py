@@ -12,6 +12,7 @@ import time
 import openpyxl
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
+import geopy
 import math
                      
 DATABASE_HEADER =  ['Project ID',       #0 / A
@@ -80,7 +81,7 @@ kml_circle=\
       <visibility>1</visibility>
       <Style>
         <geomColor>ff0000ff</geomColor>
-        <geomScale>1</geomScale>
+        <geomScale>2</geomScale>
       </Style>
       <LineString>
         <coordinates>
@@ -363,13 +364,14 @@ def google_earth_button():
     export_file.write(kml_header_1)
     export_file.write(kml_header)
     if loc_spec_var.get(): #write radius
-        long_r = radius/55
-        lat_r  = radius/69
+        long_r = radius/52.28
+        lat_r  = radius/69.01
         export_file.write(kml_circle)
+        
+        dist = geopy.distance.distance(miles = radius)
         for theta in range(361):
-            c_long = float(coords[1]) + math.cos(theta)*long_r
-            c_lat = float(coords[0]) + math.sin(theta)*lat_r
-            point = str(c_long)+','+str(c_lat)+',0\n'
+            pt= dist.destination(point=geopy.Point(coords), bearing=theta)
+            point = str(pt[1])+','+str(pt[0])+',0\n'
             export_file.write('\t\t'+point)                  
         export_file.write(kml_circle_end)
     for i in range(2,database_sheet.max_row):
